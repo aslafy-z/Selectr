@@ -105,7 +105,9 @@
             noOptions: "No options available.",
             maxSelections: "A maximum of {max} items can be selected.",
             tagDuplicate: "That tag is already in use.",
-        }
+        },
+        
+        skipFirstImport: false,
     };
 
     /**
@@ -573,7 +575,8 @@
         // Element may have optgroups so
         // iterate element.children instead of element.options
         var group = false,
-            j = 0;
+            j = 0,
+            skippedFirst = false;
         if (this.el.children.length) {
             util.each(this.el.children, function(i, element) {
                 if (element.nodeName === "OPTGROUP") {
@@ -590,6 +593,10 @@
                         j++;
                     }, this);
                 } else {
+                    if (!skippedFirst && j === 0 && this.config.skipFirstImport)  {
+                        skippedFirst = true;
+                        return;
+                    }
                     element.idx = j;
                     createItem.call(this, element);
                     j++;
